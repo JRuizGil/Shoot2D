@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -9,6 +10,9 @@ public class PlayerMovement : MonoBehaviour
 
     // Referencias al Rigidbody2D y SpriteRenderer
     private Rigidbody2D rb;
+
+    private Animator animator;
+
     private SpriteRenderer spriteRenderer;
 
     // Vector de movimiento
@@ -19,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
         // Inicializar componentes
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+        animator.SetFloat("Speed", 0);
+
+
     }
 
     void Update()
@@ -35,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
         {
             spriteRenderer.flipX = moveX < 0;  // Si se mueve a la izquierda, voltear sprite
         }
+        animator.SetFloat("Speed",Mathf.Abs (moveX + moveY));
     }
 
     void FixedUpdate()
