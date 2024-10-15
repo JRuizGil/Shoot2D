@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealthController : MonoBehaviour
 {
-    public float maxHealth = 100f; // Vida máxima
+    public float maxHealth = 100f; // Vida máxima del jugador
     private float currentHealth; // Vida actual
-    public Scrollbar healthScrollbar; // Referencia al scrollbar
+    public Scrollbar healthScrollbar; // Referencia a la barra de salud
+    public GameObject objectToDeactivate; // GameObject que se desactivará al llegar a 0 de salud
+    public GameObject objectToActivate; // GameObject que se activará al llegar a 0 de salud
 
     void Start()
     {
@@ -17,44 +19,43 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdateHealthUI()
     {
-        healthScrollbar.size = currentHealth / maxHealth; // Actualiza el tamaño del scrollbar
+        healthScrollbar.size = currentHealth / maxHealth; // Actualiza el tamaño de la barra de salud
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage()
     {
-        currentHealth -= amount; // Reduce la vida
+        // Reduce la vida en un 25%
+        currentHealth -= maxHealth * 0.25f;
         if (currentHealth < 0)
+        {
             currentHealth = 0; // Asegúrate de que no baje de cero
+            HandleDeath(); // Maneja la muerte del jugador
+        }
 
         UpdateHealthUI(); // Actualiza la UI
     }
 
-    public void Heal(float amount)
+    void HandleDeath()
     {
-        currentHealth += amount; // Aumenta la vida
-        if (currentHealth > maxHealth)
-            currentHealth = maxHealth; // Asegúrate de que no sobrepase la máxima
-
-        UpdateHealthUI(); // Actualiza la UI
-    }
-}
-
-public class TestDamage : MonoBehaviour
-{
-    public PlayerHealth playerHealth;
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space)) // Presiona espacio para recibir daño
+        if (objectToDeactivate != null)
         {
-            playerHealth.TakeDamage(10f);
+            objectToDeactivate.SetActive(false); // Desactiva el GameObject asignado
         }
 
-        if (Input.GetKeyDown(KeyCode.H)) // Presiona 'H' para curarse
+        if (objectToActivate != null)
         {
-            playerHealth.Heal(10f);
+            objectToActivate.SetActive(true); // Activa el GameObject asignado
+        }
+    }
+
+    // Método para detectar colisiones
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Comprueba si el objeto con el que colisionamos tiene la etiqueta "EnemyBullet"
+        if (other.CompareTag("EnemyBullet"))
+        {
+            TakeDamage(); // Reduce la vida del jugador
+            Destroy(other.gameObject); // Destruye la bala enemiga después de la colisión
         }
     }
 }
-
-

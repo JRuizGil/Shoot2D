@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         {
             spriteRenderer.flipX = moveX < 0;  // Si se mueve a la izquierda, voltear sprite
         }
-        animator.SetFloat("Speed",Mathf.Abs (moveX + moveY));
+        animator.SetFloat("Speed", Mathf.Abs(moveX + moveY));
     }
 
     void FixedUpdate()
